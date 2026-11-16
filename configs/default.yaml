@@ -1,0 +1,134 @@
+# Pythia default configuration.  Single source of truth for paths, models, seeds, hyper-parameters.
+seed: 20241117
+
+paths:
+  root: .
+  data_raw: data/raw
+  data_processed: data/processed
+  indices: data/indices
+  results: results
+  logs: results/logs
+  tables: results/tables
+  figures: figures
+  docs: docs
+
+# ---------------------------------------------------------------- datasets
+datasets:
+  nq:
+    hf_id: google-research-datasets/nq_open
+    hf_config: null
+    train_split: train
+    dev_split: validation
+  triviaqa:
+    hf_id: mandarjoshi/trivia_qa
+    hf_config: unfiltered.nocontext
+    train_split: train
+    dev_split: validation
+  hotpotqa:
+    hf_id: hotpotqa/hotpot_qa
+    hf_config: fullwiki
+    train_split: train
+    dev_split: validation
+
+# sample sizes per dataset
+sizes:
+  pilot: 500          # per dataset, from the train split
+  label_pool: 2000    # per dataset, from the train split (router training pool)
+  dev_from_train: 500 # per dataset, held out from the train split (router tuning)
+  eval_dev: 1000      # per dataset, sampled from the OFFICIAL dev split (final numbers)
+  # The DPR gold annotations cover only part of the NQ-open / TriviaQA train splits
+  # (NQ: 58 219 of 87 146 questions have a DPR positive).  We over-sample the train
+  # splits and keep only the queries that end up with a gold article.
+  oversample:
+    nq: 1.6
+    triviaqa: 1.35
+    hotpotqa: 1.0
+
+# ---------------------------------------------------------------- corpus
+corpus:
+  dpr_url: https://dl.fbaipublicfiles.com/dpr/wikipedia_split/psgs_w100.tsv.gz
+  dpr_file: data/raw/psgs_w100.tsv.gz
+  n_distractors: 1000000   # random non-gold passages from the 21M DPR dump
+  include_gold: true
+  max_passage_words: 100
+
+# ---------------------------------------------------------------- retrieval
+retrieval:
+  k: 5
+  dense_model: /home/parth/pythia-data/models/bge-base-en-v1.5   # BAAI/bge-base-en-v1.5 (local mirror)
+  dense_batch_size: 256
+  dense_max_len: 256
+  bm25:
+    backend: bm25s
+    k1: 1.5
+    b: 0.75
+  hybrid:
+    rrf_k: 60
+    fusion: rrf            # rrf | weighted
+    weighted_alpha: 0.5    # weight on dense when fusion == weighted
+
+# ---------------------------------------------------------------- generation
+generation:
+  model: Qwen/Qwen2.5-7B-Instruct-AWQ
+  fallback_model: Qwen/Qwen2.5-3B-Instruct
+  tokenizer: null          # null -> same as model
+  temperature: 0.0
+  top_p: 1.0
+  max_tokens: 32
+  max_model_len: 1536
+  gpu_memory_utilization: 0.93
+  max_num_seqs: 16
+  dtype: auto
+  quantization: null
+  enforce_eager: false
+  seed: 20241117
+  max_context_tokens: 1400
+  stop: ["\n"]
+  trust_remote_code: false
+
+prompt:
+  system: "You are a question answering system. Use the context when it is relevant, otherwise rely on your own knowledge. Reply with only the answer (a name, date, number or short phrase). No explanation, no full sentence."
+  template: "{ctx}Question: {question}\nAnswer:"
+
+# ---------------------------------------------------------------- labels
+labels:
+  primary_metric: em       # em | f1
+  epsilon: 0.0
+  epsilon_grid: [0.0, 0.05, 0.1]
+  cost_order: [none, bm25, dense, hybrid]
+
+# ---------------------------------------------------------------- router
+router:
+  feature_tiers: [lex, emb]     # subsets to try: lex, +emb, +probe, +gen
+  models: [logreg, gbt, mlp, deberta]
+  seeds: [20241117, 20241118, 20241119]
+  calibration: temperature
+  cost_lambda_grid: [0.0, 0.002, 0.005, 0.01, 0.02, 0.05]
+  mlp:
+    hidden: 256
+    epochs: 30
+    lr: 0.001
+    batch_size: 64
+  gbt:
+    n_estimators: 300
+    learning_rate: 0.06
+    max_depth: 6
+    num_leaves: 31
+    subsample: 0.9
+  logreg:
+    C: 1.0
+    max_iter: 2000
+  deberta:
+    model: microsoft/deberta-v3-small
+    epochs: 4
+    lr: 2e-5
+    batch_size: 32
+    max_len: 64
+
+# ---------------------------------------------------------------- evaluation
+eval:
+  bootstrap_samples: 10000
+  bootstrap_seed: 20241117
+  success_margin_em: 1.0
+  success_min_call_reduction: 0.30
+  alpha: 0.05

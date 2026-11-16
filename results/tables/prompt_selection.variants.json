@@ -1,0 +1,31 @@
+{
+  "v1_minimal": {
+    "system": "You are a helpful assistant that answers questions. Answer with the shortest possible span: just the answer, no explanation.",
+    "user": "Question: {q}\nAnswer:",
+    "stop": [
+      "\n"
+    ]
+  },
+  "v2_terse": {
+    "system": "You are a precise question answering system. Respond with only the answer entity or span. Do not write a sentence.",
+    "user": "Q: {q}\nA:",
+    "stop": [
+      "\n"
+    ]
+  },
+  "v3_rag": {
+    "system": "You are a question answering system. Use the context when it is relevant, otherwise rely on your own knowledge. Reply with only the answer (a name, date, number or short phrase). No explanation, no full sentence.",
+    "user": "{ctx}Question: {q}\nAnswer:",
+    "stop": [
+      "\n"
+    ]
+  },
+  "v4_nostop": {
+    "system": "You are a helpful assistant that answers questions. Answer with the shortest possible span: just the answer, no explanation.",
+    "user": "Question: {q}\nAnswer:",
+    "stop": [
+      "\n\n",
+      "Question:"
+    ]
+  }
+}

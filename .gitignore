@@ -1,0 +1,18 @@
+# Heavy artifacts live outside the repo (see scripts/00_setup.sh) - never commit them.
+data/raw
+data/processed
+data/indices
+results/logs/
+results/**/*.parquet
+results/**/*.jsonl
+*.parquet
+*.jsonl
+*.gz
+*.npy
+*.pkl
+*.index
+__pycache__/
+*.py[cod]
+.venv/
+.ipynb_checkpoints/
+.DS_Store

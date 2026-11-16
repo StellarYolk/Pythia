@@ -1,0 +1,62 @@
+{
+  "total": 10282,
+  "with_gold": 10282,
+  "without_gold": 0,
+  "dropped_no_gold": 1280,
+  "by_dataset": {
+    "nq": {
+      "total": 3500,
+      "with_gold": 3500,
+      "by_subset": {
+        "label": {
+          "total": 2000,
+          "with_gold": 2000
+        },
+        "tune": {
+          "total": 500,
+          "with_gold": 500
+        },
+        "eval": {
+          "total": 1000,
+          "with_gold": 1000
+        }
+      }
+    },
+    "triviaqa": {
+      "total": 3291,
+      "with_gold": 3291,
+      "by_subset": {
+        "label": {
+          "total": 2000,
+          "with_gold": 2000
+        },
+        "tune": {
+          "total": 500,
+          "with_gold": 500
+        },
+        "eval": {
+          "total": 791,
+          "with_gold": 791
+        }
+      }
+    },
+    "hotpotqa": {
+      "total": 3491,
+      "with_gold": 3491,
+      "by_subset": {
+        "label": {
+          "total": 2000,
+          "with_gold": 2000
+        },
+        "tune": {
+          "total": 491,
+          "with_gold": 491
+        },
+        "eval": {
+          "total": 1000,
+          "with_gold": 1000
+        }
+      }
+    }
+  }
+}

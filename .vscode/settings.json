@@ -1,0 +1,37 @@
+{
+    // Keep VS Code / Pylance away from the multi-GB data artifacts (they live outside the
+    // repo via symlinks, but the file watcher still resolves them).
+    "files.watcherExclude": {
+        "**/data/raw/**": true,
+        "**/data/processed/**": true,
+        "**/data/indices/**": true,
+        "**/results/logs/**": true,
+        "**/*.gz": true,
+        "**/*.parquet": true,
+        "**/*.npy": true,
+        "**/*.pkl": true,
+        "**/*.index": true
+    },
+    "search.exclude": {
+        "**/data/raw/**": true,
+        "**/data/processed/**": true,
+        "**/data/indices/**": true,
+        "**/results/logs/**": true,
+        "**/*.gz": true,
+        "**/*.parquet": true,
+        "**/*.npy": true,
+        "**/*.pkl": true
+    },
+    "files.exclude": {
+        "**/data/raw": true,
+        "**/data/processed": true,
+        "**/data/indices": true
+    },
+    "files.associations": {
+        "*.jsonl": "jsonc"
+    },
+    "python.analysis.exclude": [
+        "**/data/**",
+        "**/results/logs/**"
+    ]
+}

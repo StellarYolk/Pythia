@@ -1,0 +1,5 @@
+variant,em,f1,avg_completion_tokens,example
+v1_minimal,0.34,0.39999141055023407,4.91,Jane Leeves
+v2_terse,0.3375,0.40713912560844606,4.79,Jane Leeves
+v3_rag,0.3525,0.4248870851370852,4.58,Jane Leeves
+v4_nostop,0.34,0.4009914105502341,4.9675,Jane Leeves
