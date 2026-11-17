@@ -58,13 +58,14 @@ def build_labels(
 
     rows: List[Dict[str, Any]] = []
     for qid, g in df.groupby("qid", sort=False):
-        scores = {r["strategy"]: float(r[metric]) for r in g.itertuples()}
-        ems = {r["strategy"]: float(r["em"]) for r in g.itertuples()}
-        f1s = {r["strategy"]: float(r["f1"]) for r in g.itertuples()}
-        lat = {r["strategy"]: float(r["total_latency_ms"]) for r in g.itertuples()}
-        calls = {r["strategy"]: int(r["n_retrieval_calls"]) for r in g.itertuples()}
-        tokens = {r["strategy"]: int(r["prompt_tokens"]) + int(r["completion_tokens"]) for r in g.itertuples()}
-        hits = {r["strategy"]: int(r["hit"]) for r in g.itertuples()}
+        records = list(g.itertuples())
+        scores = {r.strategy: float(getattr(r, metric)) for r in records}
+        ems = {r.strategy: float(r.em) for r in records}
+        f1s = {r.strategy: float(r.f1) for r in records}
+        lat = {r.strategy: float(r.total_latency_ms) for r in records}
+        calls = {r.strategy: int(r.n_retrieval_calls) for r in records}
+        tokens = {r.strategy: int(r.prompt_tokens) + int(r.completion_tokens) for r in records}
+        hits = {r.strategy: int(r.hit) for r in records}
         dataset = g["dataset"].iloc[0]
         subset = g["subset"].iloc[0]
 

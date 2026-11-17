@@ -7,6 +7,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -96,7 +97,7 @@ def main() -> None:
                         "dataset": ds,
                         "n": len(g),
                         "dist": json.dumps(g["label"].value_counts(normalize=True).round(4).to_dict()),
-                        "label_em": float((lab["label_score"] > 0).mean()),
+                        "label_em": float((g["label_score"] > 0).mean()),
                         "oracle_em": float(g["oracle_score"].mean()),
                         "mean_calls": float(g["label_calls"].mean()),
                         "retrieval_hurts": float(g["retrieval_hurts"].mean()),

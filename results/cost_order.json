@@ -1,0 +1,21 @@
+{
+  "mean_total_latency_ms": {
+    "bm25": 356.77,
+    "dense": 264.94,
+    "hybrid": 358.66,
+    "none": 61.68
+  },
+  "assumed_order": [
+    "none",
+    "bm25",
+    "dense",
+    "hybrid"
+  ],
+  "measured_order": [
+    "none",
+    "dense",
+    "bm25",
+    "hybrid"
+  ],
+  "agrees": false
+}

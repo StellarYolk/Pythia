@@ -1,0 +1,46 @@
+# Configuration for the imported secondary run.
+#
+# This run reproduces an external Pythia checkout whose generation/retrieval was
+# already done on a smaller budget.  `scripts/import_external_run.py` writes the
+# query splits and per-query logs; stages 05-09 then run unchanged.
+#
+# It is deliberately *not* the pre-registered 7B experiment in PLAN.md:
+#   generator  Qwen/Qwen2.5-1.5B-Instruct
+#   retriever  BM25 + BAAI/bge-small-en-v1.5 (curated 35,758-passage corpus)
+# The generated report states this explicitly.
+extends: default.yaml
+
+provenance:
+  kind: imported_external_run
+  eval_label: imported held-out test split
+  eval_description: imported held-out test-split queries
+  sizes_note: >-
+    Imported run: 1,562 label / 750 tune / 750 eval queries in total
+    (label per dataset: NQ 362, TriviaQA 600, HotpotQA 600; tune and eval 250 each).
+  note: >-
+    Imported secondary run: Qwen2.5-1.5B-Instruct + BAAI/bge-small-en-v1.5 over the
+    external checkout's curated 35,758-passage corpus. The evaluation split is that
+    checkout's held-out test split. This is not the pre-registered Qwen2.5-7B
+    experiment in PLAN.md; see docs/DEVIATIONS.md and the provenance JSON under
+    results/imported_run_*.json.
+
+generation:
+  model: Qwen/Qwen2.5-1.5B-Instruct
+  fallback_model: Qwen/Qwen2.5-1.5B-Instruct
+  max_tokens: 32
+
+retrieval:
+  k: 5
+  dense_model: BAAI/bge-small-en-v1.5
+
+router:
+  models: [logreg]
+  seeds: [7]
+  feature_tiers: [lex, emb]
+  emb_device: cuda
+
+eval:
+  primary_variant: pooled
+  primary_tiers: lex-emb
+  # the imported run is small; keep paired tests and bootstrap tractable
+  bootstrap_samples: 2000

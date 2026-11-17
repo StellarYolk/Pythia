@@ -4,7 +4,7 @@
 set -uo pipefail
 
 REPO_ID="${1:-BAAI/bge-base-en-v1.5}"
-DEST="${2:-/home/parth/pythia-data/models/bge-base-en-v1.5}"
+DEST="${2:-${PYTHIA_DATA_ROOT:-$HOME/pythia-data}/models/bge-base-en-v1.5}"
 FILES="${3:-config.json model.safetensors tokenizer.json tokenizer_config.json vocab.txt special_tokens_map.json}"
 
 mkdir -p "$DEST"

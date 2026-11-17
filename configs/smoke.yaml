@@ -1,0 +1,22 @@
+# Small, CPU-only config used by tests/smoke.sh.  It inherits the production config
+# and shrinks every expensive knob so stages 05-09 run in under a minute on synthetic
+# logs.  It is *not* a scientific configuration.
+extends: default.yaml
+
+seed: 7
+
+router:
+  feature_tiers: [lex]
+  models: [logreg]
+  seeds: [7]
+  cost_lambda_grid: [0.0, 0.005, 0.02]
+
+eval:
+  bootstrap_samples: 500
+  bootstrap_seed: 7
+  primary_variant: pooled
+  primary_tiers: lex
+  failure_sample_per_dataset: 10
+
+labels:
+  epsilon_grid: [0.0, 0.05]

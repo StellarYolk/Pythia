@@ -55,7 +55,8 @@ corpus:
 # ---------------------------------------------------------------- retrieval
 retrieval:
   k: 5
-  dense_model: /home/parth/pythia-data/models/bge-base-en-v1.5   # BAAI/bge-base-en-v1.5 (local mirror)
+  # HuggingFace id or a local mirror path (e.g. $PYTHIA_DATA_ROOT/models/bge-base-en-v1.5)
+  dense_model: BAAI/bge-base-en-v1.5
   dense_batch_size: 256
   dense_max_len: 256
   bm25:
@@ -101,6 +102,7 @@ labels:
 router:
   feature_tiers: [lex, emb]     # subsets to try: lex, +emb, +probe, +gen
   models: [logreg, gbt, mlp, deberta]
+  emb_device: cuda             # falls back to cpu when CUDA is unavailable
   seeds: [20241117, 20241118, 20241119]
   calibration: temperature
   cost_lambda_grid: [0.0, 0.002, 0.005, 0.01, 0.02, 0.05]
@@ -129,6 +131,11 @@ router:
 eval:
   bootstrap_samples: 10000
   bootstrap_seed: 20241117
-  success_margin_em: 1.0
+  # EM is on the 0-1 scale, so "within 1 absolute point" is 0.01 (pre-registered in PLAN.md §8)
+  success_margin_em: 0.01
   success_min_call_reduction: 0.30
   alpha: 0.05
+  # analysis/report defaults
+  primary_variant: pooled
+  primary_tiers: lex-emb
+  failure_sample_per_dataset: 50
