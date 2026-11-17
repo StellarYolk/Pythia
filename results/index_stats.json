@@ -1,0 +1,9 @@
+{
+  "dense": {
+    "name": "dense",
+    "model": "/home/parth/pythia-data/models/bge-base-en-v1.5",
+    "n_docs": 1203619,
+    "index": "IndexScalarQuantizer"
+  },
+  "peak_rss_gb": 7.2
+}
