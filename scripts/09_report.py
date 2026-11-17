@@ -108,13 +108,18 @@ def main() -> None:
         "filled in only where the corresponding stage artefacts exist; missing stages are "
         "marked explicitly.\n"
     )
+    provenance = cfg.get("provenance") or {}
+    eval_label = provenance.get("eval_label", "official dev")
+    eval_description = provenance.get("eval_description", "official-dev queries")
+    if provenance:
+        L.append(f"> **Provenance.** {provenance.get('note', '')}\n")
 
     # ---------------------------------------------------------------- summary
     L.append("## 1. Summary\n")
     if analysis:
         L.append(
             f"The primary router is **`{analysis['primary_system']}`**. On {analysis['n']} "
-            f"official-dev queries it reaches **EM {analysis['em']:.4f}** / F1 {analysis['f1']:.4f} "
+            f"{eval_description} it reaches **EM {analysis['em']:.4f}** / F1 {analysis['f1']:.4f} "
             f"at a retrieval-call rate of **{analysis['retrieval_call_rate']:.3f}** "
             f"(oracle over the four strategies: EM {analysis['oracle_em']:.4f}).\n"
         )
@@ -142,13 +147,16 @@ def main() -> None:
         f"cost order {cfg['labels']['cost_order']}.\n"
     )
     sizes = cfg.get("sizes", {})
-    L.append(
-        f"- Sample sizes per dataset: label pool {sizes.get('label_pool')}, tune "
-        f"{sizes.get('dev_from_train')}, eval {sizes.get('eval_dev')} (official dev split).\n"
-    )
+    if provenance.get("sizes_note"):
+        L.append(f"- {provenance['sizes_note']}\n")
+    else:
+        L.append(
+            f"- Sample sizes per dataset: label pool {sizes.get('label_pool')}, tune "
+            f"{sizes.get('dev_from_train')}, eval {sizes.get('eval_dev')} (official dev split).\n"
+        )
 
     # ---------------------------------------------------------------- main table
-    L.append("## 3. Main results (official dev)\n")
+    L.append(f"## 3. Main results ({eval_label})\n")
     if summary is not None:
         keep = ["never_retrieve", "always_bm25", "always_dense", "always_hybrid", "oracle",
                 "complexity_classifier"]

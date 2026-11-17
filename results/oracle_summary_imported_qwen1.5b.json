@@ -1,0 +1,44 @@
+{
+  "hotpotqa": {
+    "n": 850,
+    "oracle_em": 0.5976470588235294,
+    "oracle_f1": 0.7036469882674328,
+    "mean_label_calls": 0.45176470588235296,
+    "mean_label_latency_ms": 150.4366602228744,
+    "retrieval_hurts_rate": 0.009411764705882352,
+    "label_distribution": {
+      "none": 0.5482,
+      "dense": 0.3624,
+      "bm25": 0.0576,
+      "hybrid": 0.0318
+    }
+  },
+  "nq": {
+    "n": 612,
+    "oracle_em": 0.477124183006536,
+    "oracle_f1": 0.6484221131305765,
+    "mean_label_calls": 0.4199346405228758,
+    "mean_label_latency_ms": 183.73385725509354,
+    "retrieval_hurts_rate": 0.00980392156862745,
+    "label_distribution": {
+      "none": 0.5801,
+      "dense": 0.3382,
+      "bm25": 0.0523,
+      "hybrid": 0.0294
+    }
+  },
+  "triviaqa": {
+    "n": 850,
+    "oracle_em": 0.78,
+    "oracle_f1": 0.843579373670705,
+    "mean_label_calls": 0.4152941176470588,
+    "mean_label_latency_ms": 133.84448626697977,
+    "retrieval_hurts_rate": 0.03411764705882353,
+    "label_distribution": {
+      "none": 0.5847,
+      "dense": 0.3318,
+      "bm25": 0.0635,
+      "hybrid": 0.02
+    }
+  }
+}

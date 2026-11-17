@@ -1,0 +1,86 @@
+{
+  "run": "imported_qwen1.5b",
+  "kind": "imported_external_run",
+  "source": "/home/deathslash/Pythia",
+  "split_map": {
+    "train": "label",
+    "dev": "tune",
+    "test": "eval"
+  },
+  "derived_fields": {
+    "hit": "pid-level: gold_passage_ids intersect retrieved[].pid (-1 for none)",
+    "ctx_has_answer": "proxy: hit for retrieval strategies, 0 for none (context text was not stored)",
+    "ctx_tokens": "-1 (not recorded)",
+    "first_token_entropy": "external entropy column",
+    "mean_entropy": "external entropy column",
+    "first_token_margin": "0.0 (not recorded)",
+    "retrieved_titles": "[] (external logs store pids and scores only)"
+  },
+  "source_files": {
+    "data/splits/train.jsonl": "068a1c6f67ee317f71ef424073b0b38a7fd9e0eb17623f199f42aba3c6960f17",
+    "results/labels/train/all_strategy_logs.parquet": "f4aa5d7bf9f728839130fdf63135cd130bf56a86aa06b00bda01d836020601ca",
+    "data/splits/dev.jsonl": "b956774a1738f400f1a24b77d7ec1a769099a3df94d7479d931963140a48b546",
+    "results/labels/dev/all_strategy_logs.parquet": "8e1cd9d5afee40aacc7cfda747ac06906566cbc5cfde09e9f6e3362b09deab47",
+    "data/splits/test.jsonl": "cf00f223c62157ad038f4af0375a863579edf9bf106819d142a2733ae4f075d7",
+    "results/labels/test/all_strategy_logs.parquet": "6b36d440058846e163efdca3b2813d14a4d97d8ca8fa1f3ad1fd1d8a1ae3e5ed"
+  },
+  "splits": {
+    "train": {
+      "destination_subset": "label",
+      "queries": 1562,
+      "log_rows": 6248,
+      "generators": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "config_sha256": [
+        "edb8c1e9b44f764d0b6059919bd8ba36b74ad67c8809ced5b54085882dabbb88"
+      ],
+      "prompt_template_hash": [
+        "927c3ef0fbe50aa0"
+      ],
+      "k": [
+        5
+      ]
+    },
+    "dev": {
+      "destination_subset": "tune",
+      "queries": 750,
+      "log_rows": 3000,
+      "generators": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "config_sha256": [
+        "edb8c1e9b44f764d0b6059919bd8ba36b74ad67c8809ced5b54085882dabbb88"
+      ],
+      "prompt_template_hash": [
+        "927c3ef0fbe50aa0"
+      ],
+      "k": [
+        5
+      ]
+    },
+    "test": {
+      "destination_subset": "eval",
+      "queries": 750,
+      "log_rows": 3000,
+      "generators": [
+        "Qwen/Qwen2.5-1.5B-Instruct"
+      ],
+      "config_sha256": [
+        "edb8c1e9b44f764d0b6059919bd8ba36b74ad67c8809ced5b54085882dabbb88"
+      ],
+      "prompt_template_hash": [
+        "927c3ef0fbe50aa0"
+      ],
+      "k": [
+        5
+      ]
+    }
+  },
+  "caveats": [
+    "This is an imported secondary run, not the pre-registered 7B experiment in PLAN.md.",
+    "Retrieval used the external checkout's curated corpus, not the 1M-passage DPR sample.",
+    "hit is passage-id level; the original runner's hit is title level.",
+    "ctx_has_answer is a proxy derived from hit because the context text was not stored."
+  ]
+}
