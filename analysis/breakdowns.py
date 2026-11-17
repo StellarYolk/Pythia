@@ -98,35 +98,43 @@ def json_answers(s: Any) -> List[str]:
 # failure taxonomy
 # --------------------------------------------------------------------------------------
 FAILURE_CATEGORIES = [
-    "router_skipped_long_tail_fact",
-    "retrieval_returned_distractors",
-    "multi_hop_needs_iterative_retrieval",
-    "answer_normalisation_artefact",
-    "label_noise_em_strictness",
-    "generator_hallucination",
-    "ambiguous_or_wrong_gold",
     "no_failure",
+    "router_skipped_long_tail_fact",        # under-retrieval: oracle needed retrieval, we chose none
+    "retrieval_returned_distractors",       # retrieval ran, gold article was not retrieved
+    "multi_hop_needs_iterative_retrieval",  # HotpotQA bridge/comparison failure with no gold hit
+    "retrieval_hurt_over_retrieval",        # over-retrieval: none would have been enough
+    "answer_normalisation_artefact",        # near-miss after normalisation
+    "label_noise_em_strictness",            # strict EM disagreement
+    "generator_hallucination",              # context/gold retrieved but the model still failed
+    "ambiguous_or_wrong_gold",
 ]
 
 
 def categorise_failure(row: pd.Series, oracle_strategy: str, pred_strategy: str, oracle_em: float, pred_em: float) -> str:
-    """Rule-based first pass of the failure taxonomy (manually verified in docs/failures.md)."""
+    """Rule-based first pass of the failure taxonomy (manually verified in docs/failures.md).
+
+    ``oracle_strategy`` is the best-scoring strategy for this query, ``pred_strategy`` the
+    one the system actually chose.  The rules separate routing errors (under/over
+    retrieval) from retrieval and generation errors.
+    """
     if pred_em >= 1.0:
         return "no_failure"
-    if oracle_em < 1.0 and pred_em < 1.0:
-        # the oracle strategy also failed -> not a routing error
-        if row.get("hit", 0) == 0:
-            return "retrieval_returned_distractors"
-        return "generator_hallucination"
-    if oracle_em >= 1.0 and pred_em < 1.0:
-        if oracle_strategy == "none" or pred_strategy == "none":
-            # the router skipped a retrieval that was needed
-            if row.get("n_words", 0) >= 12:
-                return "router_skipped_long_tail_fact"
+
+    if oracle_em >= 1.0:
+        # a strategy would have answered correctly, so the router or the retriever is at fault
+        if pred_strategy == "none" and oracle_strategy != "none":
             return "router_skipped_long_tail_fact"
         if row.get("hit", 0) == 0:
+            if row.get("dataset") == "hotpotqa" and row.get("hp_type") in ("bridge", "comparison"):
+                return "multi_hop_needs_iterative_retrieval"
             return "retrieval_returned_distractors"
         return "generator_hallucination"
-    if oracle_em < 1.0 and pred_em >= 1.0:
-        return "label_noise_em_strictness"
-    return "no_failure"
+
+    # even the oracle strategy failed -> not a routing error
+    if pred_strategy != "none" and oracle_strategy == "none":
+        return "retrieval_hurt_over_retrieval"
+    if pred_strategy != "none" and row.get("hit", 0) == 0:
+        if row.get("dataset") == "hotpotqa" and row.get("hp_type") in ("bridge", "comparison"):
+            return "multi_hop_needs_iterative_retrieval"
+        return "retrieval_returned_distractors"
+    return "generator_hallucination"
