@@ -90,6 +90,9 @@ def embedding_features(questions: Sequence[str], model_name: str = "BAAI/bge-bas
 
     from retrieval.dense import QUERY_PREFIX
 
+    if device == "cuda" and not torch.cuda.is_available():
+        LOG.warning("CUDA unavailable for the embedding tier - falling back to CPU")
+        device = "cpu"
     tok = AutoTokenizer.from_pretrained(model_name)
     model = AutoModel.from_pretrained(model_name).to(device).eval()
     out = []
@@ -101,7 +104,8 @@ def embedding_features(questions: Sequence[str], model_name: str = "BAAI/bge-bas
             hidden = torch.nn.functional.normalize(hidden, dim=-1)
             out.append(hidden.float().cpu().numpy())
     del model
-    torch.cuda.empty_cache()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     return np.concatenate(out, axis=0).astype(np.float32)
 
 

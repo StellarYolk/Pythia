@@ -62,11 +62,12 @@ class LogRegRouter(BaseRouter):
         self.feature_names_ = list(X.columns) if hasattr(X, "columns") else []
         Xa = X.values if hasattr(X, "values") else np.asarray(X)
         ya = np.asarray(y)
+        # `multi_class` is deprecated in sklearn >= 1.5 and removed in 1.8; the lbfgs
+        # solver is multinomial by default, so it is intentionally not passed.
         self.model_ = LogisticRegression(
             C=self.kwargs.get("C", 1.0),
             max_iter=self.kwargs.get("max_iter", 2000),
             class_weight="balanced",
-            multi_class="multinomial",
             random_state=seed,
             n_jobs=4,
         )
@@ -260,7 +261,9 @@ def build_model(name: str, cfg: Dict[str, Any]) -> BaseRouter:
     if name == "mlp":
         return MLPRouter(**cfg.get("mlp", {}))
     if name == "deberta":
-        return DebertaRouter(**cfg.get("deberta", {}).get("model", "microsoft/deberta-v3-small"), **cfg.get("deberta", {}))
+        opts = dict(cfg.get("deberta", {}))
+        model_name = opts.pop("model", "microsoft/deberta-v3-small")
+        return DebertaRouter(model_name=model_name, **opts)
     raise ValueError(f"unknown router model {name}")
 
 

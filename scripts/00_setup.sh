@@ -5,9 +5,9 @@
 # ---------------------------------------------------------------------------
 set -euo pipefail
 
-REPO="/home/parth/college/NLP/lab/pythia"
-DATA_ROOT="${PYTHIA_DATA_ROOT:-/home/parth/pythia-data}"
-VENV="${PYTHIA_VENV:-/home/parth/venvs/pythia}"
+REPO="${PYTHIA_REPO:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
+DATA_ROOT="${PYTHIA_DATA_ROOT:-$HOME/pythia-data}"
+VENV="${PYTHIA_VENV:-$HOME/venvs/pythia}"
 
 echo "== Pythia setup =="
 echo "repo      : $REPO"

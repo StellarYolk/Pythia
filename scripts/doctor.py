@@ -42,8 +42,9 @@ def main() -> int:
     else:
         print(f"  [ok] {free:.1f} GB available (>= {MIN_FREE_RAM_GB} GB)")
 
-    du = shutil_free = None
-    st = os.statvfs("/home/parth")
+    data_root = Path(os.environ.get("PYTHIA_DATA_ROOT", Path.home() / "pythia-data"))
+    disk_root = data_root if data_root.exists() else Path.home()
+    st = os.statvfs(disk_root)
     disk_free = st.f_bavail * st.f_frsize / 1e9
     print(f"Disk: free={disk_free:.1f} GB")
     if disk_free < MIN_FREE_DISK_GB:

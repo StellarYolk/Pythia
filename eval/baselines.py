@@ -31,10 +31,16 @@ def random_like(qids: Sequence[str], proportions: Dict[str, float], seed: int = 
     return rng.choice(len(STRATEGIES), size=len(qids), p=probs)
 
 
-def oracle(logs: pd.DataFrame, metric: str = "em") -> np.ndarray:
-    """Upper bound: the strategy with the best score for each query."""
+def oracle(logs: pd.DataFrame, metric: str = "em", qids: Optional[Sequence[str]] = None) -> np.ndarray:
+    """Upper bound: the strategy with the best score for each query.
+
+    If ``qids`` is supplied, the result is aligned to that order (the pivot index is
+    sorted, which is *not* necessarily the evaluation order).
+    """
     piv = logs.pivot_table(index="qid", columns="strategy", values=metric)
     piv = piv[[s for s in STRATEGIES if s in piv.columns]]
+    if qids is not None:
+        piv = piv.reindex(list(qids)).fillna(0.0)
     return piv.values.argmax(axis=1)
 
 
@@ -44,17 +50,19 @@ def confidence_threshold(
     fallback: str = "hybrid",
     confidence_col: str = "mean_logprob",
     higher_is_confident: bool = True,
+    qids: Optional[Sequence[str]] = None,
 ) -> np.ndarray:
     """Answer without retrieval unless the generator is not confident enough.
 
     `confidence_col` comes from the no-retrieval run: mean log-prob (higher = more
-    confident) or entropy (lower = more confident).
+    confident) or entropy (lower = more confident).  The output is aligned to ``qids``
+    when supplied, otherwise to the (sorted) unique query order.
     """
     none = logs[logs["strategy"] == "none"].set_index("qid")
     conf = none[confidence_col]
     if not higher_is_confident:
         conf = -conf
-    qids = list(logs["qid"].unique())
+    qids = list(qids) if qids is not None else sorted(logs["qid"].unique())
     conf = conf.reindex(qids)
     use_retrieval = (conf.isna()) | (conf < threshold)
     out = np.array([STRAT2IDX["none"]] * len(qids), dtype=int)
@@ -78,7 +86,13 @@ def complexity_classifier(
     from sklearn.linear_model import LogisticRegression
     from sklearn.preprocessing import StandardScaler
 
-    cols = [c for c in train_features.columns if c not in ("qid", "dataset", "subset", "label")]
+    cols = [
+        c
+        for c in train_features.columns
+        if c not in ("qid", "dataset", "subset", "question", "label")
+        and c in eval_features.columns
+        and pd.api.types.is_numeric_dtype(train_features[c])
+    ]
     merged = train_features.merge(labels[["qid", "label"]], on="qid", how="inner")
     y = (merged["label"] != "none").astype(int).values
     X = merged[cols].values.astype(float)
