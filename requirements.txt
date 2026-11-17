@@ -1,0 +1,26 @@
+# Core scientific stack (stages 01-03, 05-09)
+numpy>=1.24,<3
+pandas>=2.0
+pyarrow>=14
+scipy>=1.10
+scikit-learn>=1.3
+matplotlib>=3.7
+PyYAML>=6.0
+
+# Data + models
+datasets>=2.18
+huggingface-hub>=0.23
+transformers>=4.40
+torch>=2.1
+faiss-cpu>=1.7
+# On a CUDA box you may replace faiss-cpu with a matching faiss-gpu build.
+
+# Retrieval
+bm25s>=0.2
+
+# Gradient-boosted router (leaves out xgboost; the code only needs lightgbm)
+lightgbm>=4.0
+
+# Generation (GPU only; install the wheel that matches your CUDA runtime)
+# vllm>=0.6
+# vllm-flash-attn is pulled in by vllm when supported
